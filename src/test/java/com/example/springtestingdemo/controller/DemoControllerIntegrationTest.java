@@ -43,13 +43,15 @@ class DemoControllerIntegrationTest {
         catFact.setFact(fact);
         when(catFactService.getFact()).thenReturn(catFact);
 
-        String expected = "{\"fact\":\"" + fact + "\"}";
-
         MvcResult response = mockMvc.perform(get("/cat-fact"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andReturn();
 
-        assertEquals(expected, response.getResponse().getContentAsString());
+        ObjectMapper objectMapper = new ObjectMapper();
+        CatFactDTO catFactResponse =
+                objectMapper.readValue(response.getResponse().getContentAsString(), CatFactDTO.class);
+
+        assertEquals(catFact, catFactResponse);
     }
 }
